@@ -1,10 +1,12 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/../components/ui/card"
 
-export function ContentStats({ data }) {
+export function ContentPage({ data }) {
   return (
     <div className="space-y-4">
+              <h1 className="text-3xl font-bold">Content</h1>
       <h2 className="text-2xl font-semibold">Content Statistics</h2>
+      <p className="text-lg text-gray-600">This page will display content management features.</p>
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
