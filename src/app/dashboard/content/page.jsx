@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { fetchDashboardData } from '@/lib/api'
-import { FileText, Eye, MessageSquare, Share2, ThumbsUp, TrendingUp } from 'lucide-react'
+import { FileText, Eye, MessageSquare, Share2, Ban, Trash } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs"
 
 export default function ContentPage() {
   const [contentData, setContentData] = useState(null)
@@ -29,18 +31,17 @@ export default function ContentPage() {
   if (error) return <div className="text-center text-red-500">Error: {error}</div>
   if (!contentData) return <div className="text-center">No content data available</div>
 
-  const stats = [
-    { name: 'Total Posts', value: contentData.daily?.totalPosts ?? 0, icon: FileText, color: 'bg-blue-500' },
-    { name: 'Total Views', value: contentData.daily?.totalViews ?? 0, icon: Eye, color: 'bg-green-500' },
-    { name: 'Total Comments', value: contentData.daily?.totalComments ?? 0, icon: MessageSquare, color: 'bg-yellow-500' },
-    { name: 'Total Shares', value: contentData.daily?.totalPostShares ?? 0, icon: Share2, color: 'bg-purple-500' },
-    { name: 'Total Likes', value: contentData.daily?.totalLikes ?? 0, icon: ThumbsUp, color: 'bg-pink-500' },
-    { name: 'Trending Posts', value: contentData.daily?.trendingPosts ?? 0, icon: TrendingUp, color: 'bg-indigo-500' },
-  ]
+  const renderStats = (data) => {
+    const stats = [
+      { name: 'Total Posts', value: data.totalPosts, icon: FileText, color: 'bg-blue-500' },
+      { name: 'Total Views', value: data.totalViews, icon: Eye, color: 'bg-green-500' },
+      { name: 'Total Comments', value: data.totalComments, icon: MessageSquare, color: 'bg-yellow-500' },
+      { name: 'Total Shares', value: data.totalPostShares, icon: Share2, color: 'bg-purple-500' },
+      { name: 'Posts Blocked', value: data.totalPostBlocked, icon: Ban, color: 'bg-red-500' },
+      { name: 'Posts Deleted', value: data.totalPostDeleted, icon: Trash, color: 'bg-gray-500' },
+    ]
 
-  return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Content Management</h1>
+    return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((item, index) => (
           <motion.div
@@ -49,41 +50,67 @@ export default function ContentPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <div className={`${item.color} overflow-hidden rounded-lg shadow`}>
-              <div className="px-4 py-5 sm:p-6">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 rounded-md p-3 text-white">
-                    <item.icon size={24} />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="truncate text-sm font-medium text-gray-100">{item.name}</dt>
-                      <dd className="text-3xl font-semibold text-white">{item.value}</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{item.name}</CardTitle>
+                <item.icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{item.value}</div>
+              </CardContent>
+            </Card>
           </motion.div>
         ))}
       </div>
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4">Content Performance</h2>
-        <div className="bg-white shadow rounded-lg p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold text-gray-900">Content Management</h1>
+      <Tabs defaultValue="daily" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="daily">Daily</TabsTrigger>
+          <TabsTrigger value="monthly">Monthly</TabsTrigger>
+          <TabsTrigger value="allTime">All Time</TabsTrigger>
+        </TabsList>
+        <TabsContent value="daily">
+          <h2 className="text-2xl font-semibold mb-4">Daily Content Metrics</h2>
+          {renderStats(contentData.daily)}
+        </TabsContent>
+        <TabsContent value="monthly">
+          <h2 className="text-2xl font-semibold mb-4">Monthly Content Metrics</h2>
+          {renderStats(contentData.monthly)}
+        </TabsContent>
+        <TabsContent value="allTime">
+          <h2 className="text-2xl font-semibold mb-4">All Time Content Metrics</h2>
+          {renderStats(contentData.allTime)}
+        </TabsContent>
+      </Tabs>
+      <Card>
+        <CardHeader>
+          <CardTitle>Content Performance Comparison</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Avg. Views per Post</h3>
-              <p className="text-3xl font-bold text-blue-600">{(contentData.daily?.avgViewsPerPost ?? 0).toFixed(2)}</p>
-              <p className="text-sm text-gray-500">Daily average</p>
+              <h3 className="text-lg font-medium">Daily Engagement</h3>
+              <p className="text-2xl font-bold">{contentData.daily.totalViews} views</p>
+              <p className="text-sm text-gray-500">{contentData.daily.totalComments} comments</p>
             </div>
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Engagement Rate</h3>
-              <p className="text-3xl font-bold text-green-600">{((contentData.daily?.engagementRate ?? 0) * 100).toFixed(2)}%</p>
-              <p className="text-sm text-gray-500">Likes + Comments + Shares / Views</p>
+              <h3 className="text-lg font-medium">Monthly Engagement</h3>
+              <p className="text-2xl font-bold">{contentData.monthly.totalViews} views</p>
+              <p className="text-sm text-gray-500">{contentData.monthly.totalComments} comments</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-medium">All Time Engagement</h3>
+              <p className="text-2xl font-bold">{contentData.allTime.totalViews} views</p>
+              <p className="text-sm text-gray-500">{contentData.allTime.totalComments} comments</p>
             </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

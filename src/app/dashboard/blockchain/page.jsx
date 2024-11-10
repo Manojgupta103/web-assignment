@@ -3,7 +3,10 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { fetchDashboardData } from '@/lib/api'
-import { Coins, Wallet, TrendingUp, ArrowUpRight, ArrowDownRight, DollarSign } from 'lucide-react'
+import { Coins, Wallet } from 'lucide-react'
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs"
 
 export default function BlockchainPage() {
   const [blockchainData, setBlockchainData] = useState(null)
@@ -29,19 +32,16 @@ export default function BlockchainPage() {
   if (error) return <div className="text-center text-red-500">Error: {error}</div>
   if (!blockchainData) return <div className="text-center">No blockchain data available</div>
 
-  const stats = [
-    { name: 'Total Tokens', value: blockchainData.daily?.totalTokens ?? 0, icon: Coins, color: 'bg-blue-500' },
-    { name: 'Solana Wallets', value: blockchainData.daily?.totalWalletOnSolana ?? 0, icon: Wallet, color: 'bg-green-500' },
-    { name: 'Polygon Wallets', value: blockchainData.daily?.totalWalletOnPolygon ?? 0, icon: Wallet, color: 'bg-yellow-500' },
-    { name: 'Ethereum Wallets', value: blockchainData.daily?.totalWalletOnEthereum ?? 0, icon: Wallet, color: 'bg-purple-500' },
-    { name: 'New Wallets', value: blockchainData.daily?.newWallets ?? 0, icon: TrendingUp, color: 'bg-pink-500' },
-    { name: 'Token Price', value: `$${(blockchainData.daily?.tokenPrice ?? 0).toFixed(2)}`, icon: DollarSign, color: 'bg-indigo-500' },
-  ]
+  const renderStats = (data) => {
+    const stats = [
+      { name: 'Total Tokens', value: data.totalTokens, icon: Coins, color: 'bg-blue-500' },
+      { name: 'Solana Wallets', value: data.totalWalletOnSolana, icon: Wallet, color: 'bg-green-500' },
+      { name: 'Polygon Wallets', value: data.totalWalletOnPolygon, icon: Wallet, color: 'bg-yellow-500' },
+      { name: 'Ethereum Wallets', value: data.totalWalletOnEthereum, icon: Wallet, color: 'bg-purple-500' },
+    ]
 
-  return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Blockchain Metrics</h1>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    return (
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((item, index) => (
           <motion.div
             key={item.name}
@@ -49,48 +49,64 @@ export default function BlockchainPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <div className={`${item.color} overflow-hidden rounded-lg shadow`}>
-              <div className="px-4 py-5 sm:p-6">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 rounded-md p-3 text-white">
-                    <item.icon size={24} />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="truncate text-sm font-medium text-gray-100">{item.name}</dt>
-                      <dd className="text-3xl font-semibold text-white">{item.value}</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{item.name}</CardTitle>
+                <item.icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{item.value}</div>
+              </CardContent>
+            </Card>
           </motion.div>
         ))}
       </div>
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4">Token Distribution</h2>
-        <div className="bg-white shadow rounded-lg p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold text-gray-900">Blockchain Metrics</h1>
+      <Tabs defaultValue="daily" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="daily">Daily</TabsTrigger>
+          <TabsTrigger value="monthly">Monthly</TabsTrigger>
+          <TabsTrigger value="allTime">All Time</TabsTrigger>
+        </TabsList>
+        <TabsContent value="daily">
+          <h2 className="text-2xl font-semibold mb-4">Daily Blockchain Metrics</h2>
+          {renderStats(blockchainData.daily)}
+        </TabsContent>
+        <TabsContent value="monthly">
+          <h2 className="text-2xl font-semibold mb-4">Monthly Blockchain Metrics</h2>
+          {renderStats(blockchainData.monthly)}
+        </TabsContent>
+        <TabsContent value="allTime">
+          <h2 className="text-2xl font-semibold mb-4">All Time Blockchain Metrics</h2>
+          {renderStats(blockchainData.allTime)}
+        </TabsContent>
+      </Tabs>
+      <Card>
+        <CardHeader>
+          <CardTitle>Blockchain Activity Comparison</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">24h Token Volume</h3>
-              <p className="text-3xl font-bold text-blue-600">{(blockchainData.daily?.tokenVolume ?? 0).toLocaleString()}</p>
-              <p className="text-sm text-gray-500 flex items-center">
-                {(blockchainData.daily?.tokenVolumeChange ?? 0) >= 0 ? (
-                  <ArrowUpRight className="text-green-500 mr-1" />
-                ) : (
-                  <ArrowDownRight className="text-red-500 mr-1" />
-                )}
-                {Math.abs(blockchainData.daily?.tokenVolumeChange ?? 0).toFixed(2)}% from yesterday
-              </p>
+              <h3 className="text-lg font-medium">Daily Tokens</h3>
+              <p className="text-2xl font-bold">{blockchainData.daily.totalTokens}</p>
             </div>
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Active Wallets</h3>
-              <p className="text-3xl font-bold text-green-600">{(blockchainData.daily?.activeWallets ?? 0).toLocaleString()}</p>
-              <p className="text-sm text-gray-500">Across all supported chains</p>
+              <h3 className="text-lg font-medium">Monthly Tokens</h3>
+              <p className="text-2xl font-bold">{blockchainData.monthly.totalTokens}</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-medium">All Time Tokens</h3>
+              <p className="text-2xl font-bold">{blockchainData.allTime.totalTokens}</p>
             </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
