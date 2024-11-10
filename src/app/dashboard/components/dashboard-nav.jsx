@@ -1,48 +1,41 @@
-"use client"
+'use client'
 
-import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { motion } from 'framer-motion'
+import { Home, Users, FileText, BarChart2, Database } from 'lucide-react'
 
 const navItems = [
-  { href: '/dashboard', label: 'Overview' },
-  { href: '/dashboard/users', label: 'Users' },
-  { href: '/dashboard/content', label: 'Content' },
-  { href: '/dashboard/engagement', label: 'Engagement' },
-  { href: '/dashboard/blockchain', label: 'Blockchain' },
+  { icon: Home, label: 'Dashboard', href: '/dashboard' },
+  { icon: Users, label: 'Users', href: '/dashboard/users' },
+  { icon: FileText, label: 'Content', href: '/dashboard/content' },
+  { icon: BarChart2, label: 'Engagement', href: '/dashboard/engagement' },
+  { icon: Database, label: 'Blockchain', href: '/dashboard/blockchain' },
 ]
 
-export function DashboardNav() {
+const DashboardNav = () => {
   const pathname = usePathname()
 
   return (
-    <nav className="bg-white shadow-md">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0 text-xl font-bold text-gray-800">
-              SocialVerse Admin
-            </Link>
-          </div>
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
-                    pathname === item.href
-                      ? 'bg-gray-900 text-white'
-                      : 'text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+    <nav className="flex justify-between items-center bg-white shadow-md p-4 mb-6 rounded-lg">
+      {navItems.map((item) => (
+        <Link key={item.href} href={item.href}>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`flex flex-col items-center p-2 rounded-lg transition-colors duration-200 ${
+              pathname === item.href
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <item.icon size={24} />
+            <span className="text-xs mt-1">{item.label}</span>
+          </motion.div>
+        </Link>
+      ))}
     </nav>
   )
 }
+
+export default DashboardNav
