@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { fetchDashboardData } from '@/lib/api'
-import { ThumbsUp, Eye, MessageCircle, MessageSquare } from 'lucide-react'
+import { ThumbsUp, Eye, MessageCircle, MessageSquare, Share2, Clock } from 'lucide-react'
 
 export default function EngagementPage() {
   const [engagementData, setEngagementData] = useState(null)
@@ -27,19 +27,21 @@ export default function EngagementPage() {
 
   if (isLoading) return <div className="text-center">Loading...</div>
   if (error) return <div className="text-center text-red-500">Error: {error}</div>
-  if (!engagementData) return null
+  if (!engagementData) return <div className="text-center">No engagement data available</div>
 
   const stats = [
-    { name: 'Total Likes', value: engagementData.daily.totalLikes, icon: ThumbsUp, color: 'bg-blue-500' },
-    { name: 'Total Views', value: engagementData.daily.totalViews, icon: Eye, color: 'bg-green-500' },
-    { name: 'Total Messages', value: engagementData.daily.totalMessage, icon: MessageCircle, color: 'bg-yellow-500' },
-    { name: 'Private Chats', value: engagementData.daily.privateChats, icon: MessageSquare, color: 'bg-purple-500' },
+    { name: 'Total Likes', value: engagementData.daily?.totalLikes ?? 0, icon: ThumbsUp, color: 'bg-blue-500' },
+    { name: 'Total Views', value: engagementData.daily?.totalViews ?? 0, icon: Eye, color: 'bg-green-500' },
+    { name: 'Total Messages', value: engagementData.daily?.totalMessage ?? 0, icon: MessageCircle, color: 'bg-yellow-500' },
+    { name: 'Private Chats', value: engagementData.daily?.privateChats ?? 0, icon: MessageSquare, color: 'bg-purple-500' },
+    { name: 'Total Shares', value: engagementData.daily?.totalShares ?? 0, icon: Share2, color: 'bg-pink-500' },
+    { name: 'Avg. Time on App', value: `${(engagementData.daily?.avgTimeOnApp ?? 0).toFixed(2)}m`, icon: Clock, color: 'bg-indigo-500' },
   ]
 
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-gray-900">Engagement Metrics</h1>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((item, index) => (
           <motion.div
             key={item.name}
@@ -67,7 +69,20 @@ export default function EngagementPage() {
       </div>
       <div className="mt-8">
         <h2 className="text-2xl font-semibold text-gray-900 mb-4">Engagement Trends</h2>
-        {/* Add an engagement trends chart component here */}
+        <div className="bg-white shadow rounded-lg p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Daily Active Users</h3>
+              <p className="text-3xl font-bold text-blue-600">{engagementData.daily?.activeUsers ?? 0}</p>
+              <p className="text-sm text-gray-500">vs. {engagementData.weekly?.activeUsers ?? 0} weekly average</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Engagement Rate</h3>
+              <p className="text-3xl font-bold text-green-600">{((engagementData.daily?.engagementRate ?? 0) * 100).toFixed(2)}%</p>
+              <p className="text-sm text-gray-500">Interactions / Total Users</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

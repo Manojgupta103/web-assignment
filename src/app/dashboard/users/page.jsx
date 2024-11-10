@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { fetchDashboardData } from '@/lib/api'
-import { Users, UserPlus, UserCheck, Crown } from 'lucide-react'
+import { Users, UserPlus, UserCheck, Crown, Clock, TrendingUp } from 'lucide-react'
 
 export default function UsersPage() {
   const [userData, setUserData] = useState(null)
@@ -27,19 +27,21 @@ export default function UsersPage() {
 
   if (isLoading) return <div className="text-center">Loading...</div>
   if (error) return <div className="text-center text-red-500">Error: {error}</div>
-  if (!userData) return null
+  if (!userData) return <div className="text-center">No user data available</div>
 
   const stats = [
-    { name: 'Total Users', value: userData.daily.totalUser, icon: Users, color: 'bg-blue-500' },
-    { name: 'Active Users', value: userData.daily.activeUser, icon: UserCheck, color: 'bg-green-500' },
-    { name: 'Total Referrals', value: userData.daily.totalReferral, icon: UserPlus, color: 'bg-yellow-500' },
-    { name: 'Creators', value: userData.daily.creator, icon: Crown, color: 'bg-purple-500' },
+    { name: 'Total Users', value: userData.daily?.totalUser ?? 0, icon: Users, color: 'bg-blue-500' },
+    { name: 'Active Users', value: userData.daily?.activeUser ?? 0, icon: UserCheck, color: 'bg-green-500' },
+    { name: 'Total Referrals', value: userData.daily?.totalReferral ?? 0, icon: UserPlus, color: 'bg-yellow-500' },
+    { name: 'Creators', value: userData.daily?.creator ?? 0, icon: Crown, color: 'bg-purple-500' },
+    { name: 'New Users', value: userData.daily?.newUser ?? 0, icon: TrendingUp, color: 'bg-pink-500' },
+    { name: 'Avg. Session Duration', value: `${(userData.daily?.avgSessionDuration ?? 0).toFixed(2)}s`, icon: Clock, color: 'bg-indigo-500' },
   ]
 
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((item, index) => (
           <motion.div
             key={item.name}
@@ -67,7 +69,20 @@ export default function UsersPage() {
       </div>
       <div className="mt-8">
         <h2 className="text-2xl font-semibold text-gray-900 mb-4">User Activity</h2>
-        {/* Add a user activity component here */}
+        <div className="bg-white shadow rounded-lg p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Daily Active Users</h3>
+              <p className="text-3xl font-bold text-blue-600">{userData.daily?.activeUser ?? 0}</p>
+              <p className="text-sm text-gray-500">vs. {userData.weekly?.activeUser ?? 0} weekly</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">User Retention Rate</h3>
+              <p className="text-3xl font-bold text-green-600">{((userData.daily?.retentionRate ?? 0) * 100).toFixed(2)}%</p>
+              <p className="text-sm text-gray-500">Daily retention rate</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

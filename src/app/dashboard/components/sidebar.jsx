@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Menu, Home, Users, FileText, BarChart2, Database } from 'lucide-react'
+import { X, Home, Users, FileText, BarChart2, Database } from 'lucide-react'
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const pathname = usePathname()
