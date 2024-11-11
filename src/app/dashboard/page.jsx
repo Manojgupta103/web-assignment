@@ -3,12 +3,18 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { fetchDashboardData } from '@/lib/api'
-import { Users, FileText, BarChart2, Database } from 'lucide-react'
+import { Users, FileText, ThumbsUp, Coins, Eye, MessageCircle, Wallet } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
-export default function DashboardPage() {
+export default function OverviewPage() {
   const [dashboardData, setDashboardData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [timeRange, setTimeRange] = useState('daily')
+  const [chartMetric, setChartMetric] = useState('users')
 
   useEffect(() => {
     async function loadDashboardData() {
@@ -27,18 +33,47 @@ export default function DashboardPage() {
 
   if (isLoading) return <div className="text-center">Loading...</div>
   if (error) return <div className="text-center text-red-500">Error: {error}</div>
-  if (!dashboardData) return null
+  if (!dashboardData) return <div className="text-center">No dashboard data available</div>
+
+  const getMetricValue = (metric, type) => {
+    return dashboardData?.[`${metric}Metrics`]?.[timeRange]?.[type] || 0
+  }
 
   const stats = [
-    { name: 'Total Users', value: dashboardData.userMetrics.daily.totalUser, icon: Users, color: 'bg-blue-500' },
-    { name: 'Total Posts', value: dashboardData.contentMetrics.daily.totalPosts, icon: FileText, color: 'bg-green-500' },
-    { name: 'Total Likes', value: dashboardData.engagementMetrics.daily.totalLikes, icon: BarChart2, color: 'bg-yellow-500' },
-    { name: 'Total Tokens', value: dashboardData.blockchainMetrics.daily.totalTokens, icon: Database, color: 'bg-purple-500' },
+    { name: 'Total Users', value: getMetricValue('user', 'totalUser'), icon: Users, color: 'bg-blue-500' },
+    { name: 'Total Posts', value: getMetricValue('content', 'totalPosts'), icon: FileText, color: 'bg-green-500' },
+    { name: 'Total Likes', value: getMetricValue('engagement', 'totalLikes'), icon: ThumbsUp, color: 'bg-yellow-500' },
+    { name: 'Total Tokens', value: getMetricValue('blockchain', 'totalTokens'), icon: Coins, color: 'bg-purple-500' },
   ]
+
+  // Since we don't have chartData in the API response, we'll create a simple chart data structure
+  const createChartData = (metric) => {
+    const data = dashboardData?.[`${metric}Metrics`]
+    if (!data) return []
+    return Object.entries(data).map(([key, value]) => ({
+      name: key,
+      value: value[Object.keys(value)[0]] // Use the first metric as the chart value
+    }))
+  }
+
+  const chartData = createChartData(chartMetric)
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+        <Select value={timeRange} onValueChange={setTimeRange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select time range" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="daily">Daily</SelectItem>
+            <SelectItem value="monthly">Monthly</SelectItem>
+            <SelectItem value="allTime">All Time</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((item, index) => (
           <motion.div
@@ -47,28 +82,139 @@ export default function DashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <div className={`${item.color} overflow-hidden rounded-lg shadow`}>
-              <div className="px-4 py-5 sm:p-6">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 rounded-md p-3 text-white">
-                    <item.icon size={24} />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="truncate text-sm font-medium text-gray-100">{item.name}</dt>
-                      <dd className="text-3xl font-semibold text-white">{item.value}</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{item.name}</CardTitle>
+                <item.icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{item.value}</div>
+              </CardContent>
+            </Card>
           </motion.div>
         ))}
       </div>
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
-        {/* Add a recent activity component here */}
-      </div>
+
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle>Metrics Over Time</CardTitle>
+            <Select value={chartMetric} onValueChange={setChartMetric}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select metric" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="user">Users</SelectItem>
+                <SelectItem value="content">Content</SelectItem>
+                <SelectItem value="engagement">Engagement</SelectItem>
+                <SelectItem value="blockchain">Blockchain</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="value" stroke="#8884d8" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue="users" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="content">Content</TabsTrigger>
+          <TabsTrigger value="engagement">Engagement</TabsTrigger>
+          <TabsTrigger value="blockchain">Blockchain</TabsTrigger>
+        </TabsList>
+        <TabsContent value="users">
+          <Card>
+            <CardHeader>
+              <CardTitle>User Metrics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="text-lg font-medium">Active Users</h3>
+                  <p className="text-2xl font-bold">{getMetricValue('user', 'activeUser')}</p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium">Total Referrals</h3>
+                  <p className="text-2xl font-bold">{getMetricValue('user', 'totalReferral')}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="content">
+          <Card>
+            <CardHeader>
+              <CardTitle>Content Metrics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="text-lg font-medium">Total Posts</h3>
+                  <p className="text-2xl font-bold">{getMetricValue('content', 'totalPosts')}</p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium">Total Views</h3>
+                  <p className="text-2xl font-bold">{getMetricValue('content', 'totalViews')}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="engagement">
+          <Card>
+            <CardHeader>
+              <CardTitle>Engagement Metrics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="text-lg font-medium">Total Likes</h3>
+                  <p className="text-2xl font-bold">{getMetricValue('engagement', 'totalLikes')}</p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium">Total Views</h3>
+                  <p className="text-2xl font-bold">{getMetricValue('engagement', 'totalViews')}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="blockchain">
+          <Card>
+            <CardHeader>
+              <CardTitle>Blockchain Metrics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="text-lg font-medium">Total Tokens</h3>
+                  <p className="text-2xl font-bold">{getMetricValue('blockchain', 'totalTokens')}</p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium">Total Wallets</h3>
+                  <p className="text-2xl font-bold">
+                    {getMetricValue('blockchain', 'totalWalletOnSolana') +
+                     getMetricValue('blockchain', 'totalWalletOnPolygon') +
+                     getMetricValue('blockchain', 'totalWalletOnEthereum')}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
