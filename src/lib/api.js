@@ -1,6 +1,4 @@
 export async function fetchDashboardData() {
-  // In a real application, this would be an actual API call
-  // For this example, we'll return mock data
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({

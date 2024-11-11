@@ -1,93 +1,134 @@
 
-# 🌟 Admin Dashboard Assignment 🌟
+# Admin Dashboard
 
-Welcome to the **Admin Dashboard Assignment**! This project will guide you in creating a functional and user-friendly admin dashboard for a social media platform using **Next.js** and API integration.
+![Admin Dashboard Logo](/placeholder.svg?height=100&width=100)
 
----
+## Table of Contents
 
-## 📝 Project Overview
+- [Introduction](#introduction)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Video Demo](#video-demo)
+- [Components](#components)
+- [API](#api)
+- [Contributing](#contributing)
+- [License](#license)
 
-You’ll be building a responsive admin dashboard for a social media application. The dashboard will include essential features such as **user management**, **content moderation**, and **analytics** to give admins control over user data and platform activities.
+## Introduction
 
-🔗 **Admin Dashboard API**: `https://api.socialverseapp.com/admin/dashboard`
+The Admin Dashboard is a powerful, interactive web application built with Next.js and React. It provides a comprehensive overview of user engagement, content metrics, blockchain activity, and more. This dashboard is designed to help administrators and managers quickly understand and analyze key performance indicators (KPIs) across various aspects of their platform.
 
----
+## Features
 
-## 🌟 Key Features
+- **Interactive Overview**: A dynamic summary of all key metrics with customizable time ranges.
+- **User Management**: Track user growth, active users, and referrals.
+- **Content Metrics**: Monitor post creation, views, shares, and moderation actions.
+- **Engagement Analysis**: Analyze likes, views, notifications, and messaging activity.
+- **Blockchain Integration**: Keep track of token distribution and wallet creation across multiple chains.
+- **Responsive Design**: Fully responsive layout that works on desktop, tablet, and mobile devices.
+- **Real-time Updates**: Data refreshes automatically to provide the most current information.
+- **Customizable Charts**: Interactive charts that allow for deep dive into specific metrics.
 
-1. 👤 User Management: Easily view & track activity, referrals, and identify active users or creators.
+## Installation
 
-2. 📝 Content Moderation: Monitor daily views, shares, comments, and post exits.
+To get started with the Admin Dashboard, follow these steps:
 
-3. 📊 Analytics: Visualize user activity and engagement metrics daily/monthly with charts; analyze views, likes, shares, and private messages.
-
-5. 📈 Data Visualization: Responsive charts (Chart.js/Recharts) provide insights into user engagement and content performance.
-
----
-
-## 🛠️ Tech Stack
-
-- **Frontend**: Next.js
-- **Styling**: Tailwind CSS or Styled Components
-- **Analytics Visualization**: Chart.js or Recharts
-- **Data Fetching**: SWR or React Query for API requests
-
----
-
-## ✅ Requirements
-
-1. **📱 Responsive Design**: Ensure that the dashboard is mobile-friendly.
-2. **🌐 API Integration**: Use the provided API to fetch and display user and post data.
-3. **📄 Documentation**: Write clean, well-documented code, and include a detailed **README** with setup instructions and an overview of the project structure.
-
----
-
-## 🚀 Getting Started
-
-1. **Clone or Fork the repository** and install the necessary dependencies:
+1. Clone the repository:
    ```bash
-   git clone https://github.com/Tim-Alpha/web-assignment.git
+   git clone https://github.com/your-username/admin-dashboard.git
+   cd admin-dashboard
    ```
-   ```bash
-   cd web-assignment
-   ```
+
+2. Install the dependencies:
    ```bash
    npm install
    ```
-2. **Set up environment variables** by creating an `.env.local` file.
-3. **Run the project**:
+
+3. Set up environment variables:
+   Create a `.env.local` file in the root directory and add the following:
+   ```
+   NEXT_PUBLIC_API_URL=your_api_url_here
+   ```
+
+4. Run the development server:
    ```bash
    npm run dev
    ```
 
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the dashboard.
+
+## Usage
+
+After installation, you can navigate through the dashboard using the sidebar menu. Here's a quick overview of how to use the main features:
+
+1. **Overview Page**: This is your landing page, showing a summary of all key metrics. Use the time range selector to view data for different periods.
+
+2. **Users Page**: Dive deep into user statistics. Track new sign-ups, active users, and top creators.
+
+3. **Content Page**: Analyze content performance, including views, shares, and moderation actions.
+
+4. **Engagement Page**: Monitor user interactions such as likes, comments, and messaging activity.
+
+5. **Blockchain Page**: Keep track of token distribution and wallet creation across Solana, Polygon, and Ethereum.
+
+## Video Demo
+
+[![Admin Dashboard Demo](/placeholder.svg?height=300&width=500)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+
+Click the image above to watch a comprehensive video demonstration of the Admin Dashboard in action. The video covers:
+
+- Navigation and layout overview
+- Exploring key features and functionalities
+- Customizing views and generating reports
+- Tips for efficient dashboard usage
+
+## Components
+
+The Admin Dashboard is built using several reusable components:
+
+- `Overview`: The main dashboard component displaying summary metrics.
+- `UserMetrics`: Detailed user statistics and growth charts.
+- `ContentAnalytics`: In-depth analysis of content performance and moderation.
+- `EngagementInsights`: Visualization of user engagement and interaction data.
+- `BlockchainMonitor`: Tracking of blockchain-related activities and token distribution.
+
+Each component is designed to be modular and can be easily customized or extended as needed.
+
+## API
+
+The dashboard interacts with a backend API to fetch and display data. The main API functions are located in `lib/api.js`. Key functions include:
+
+- `fetchDashboardData()`: Retrieves all dashboard metrics.
+- `fetchUserData(timeRange)`: Fetches user-specific data for a given time range.
+- `fetchContentData(timeRange)`: Retrieves content metrics for a specified period.
+- `fetchEngagementData(timeRange)`: Gets engagement statistics for a particular timeframe.
+- `fetchBlockchainData(timeRange)`: Fetches blockchain-related metrics for the specified duration.
+
+Refer to the API documentation for detailed information on request/response formats and available endpoints.
+
+## Contributing
+
+We welcome contributions to the Admin Dashboard! If you'd like to contribute, please follow these steps:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+Please make sure to update tests as appropriate and adhere to the existing coding style.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
 ---
 
-## 📩 Submission Process
+For any additional questions or support, please contact our team at support@admindashboard.com.
 
-1. **GitHub Repository**:
-   - Push your code to a GitHub repository with appropriate permissions.
-   - Ensure that the repository has **read permissions** for review.
+```
 
-2. **🎥 Video Explanation**:
-   - Record a video walk through of your project, including:
-     - A demo of the UI and key features
-     - An explanation of your code structure and logic
-     - A brief introduction of yourself and the project
-   - **Tip**: Make it engaging and informative!
-   - Share the video link via a platform like Google Drive or Internshala.
-   - Your face must be visible in the entire video explanation.
+This README provides a comprehensive overview of the Admin Dashboard project, including installation instructions, usage guidelines, a section for a video demo, component descriptions, API information, contribution guidelines, and licensing details. The Markdown format ensures that it will render nicely on GitHub or other platforms that support Markdown.
 
-3. **Submit the Following**:
-   - **GitHub Link**: Your repository link
-   - **Video Link**: Your video walk through link
-
----
-
-## 🏆 Evaluation Criteria
-
-1. **✨ UI/UX**: Aesthetics, ease of use, and responsiveness
-2. **🧑‍💻 Code Quality**: Readable, well-structured, and documented code
-3. **🌐 API Integration**: Proper use of the provided API
-4. **📅 Completion**: Submission of both the GitHub and video links, with all features implemented
-
-Good luck, and happy coding! 🚀
+Remember to replace placeholder URLs, email addresses, and other project-specific information with your actual project details. Also, you'll need to create or obtain appropriate images for the logo and video thumbnail, replacing the placeholder SVG URLs with actual image URLs.
